@@ -22,11 +22,16 @@ SetDefaultMouseSpeed, 5
 CoordMode, Pixel, Client
 CoordMode, Mouse, Client
 
+OnExit()
+
 global D3ScreenResolution
 ,NativeDiabloHeight := 1440
 ,NativeDiabloWidth := 3440
 ,#ctrls := 3
 ,Ping
+,HotKeySetToggle1
+,HotKeySetToggle2
+,HotKeySetToggle3
 
 IfNotExist, Hotkeys.ini
 	FileAppend,
@@ -56,6 +61,10 @@ Loop % #ctrls
 }   
 GUI, Add, Text, xm, Ping [ms]:
 GUI, Add, Edit, x+5 w33 Limit3 Number gSubmit vPing, %Ping%
+
+HotKeySetToggle1=0
+HotKeySetToggle2=0
+HotKeySetToggle3=0
 Return
 
 ~F1::
@@ -77,30 +86,54 @@ Return
 Return
 
 
-Label1:		;Hotkey for #1 Paragon Setup
+Label1:		;Hotkey for #1 Hotkey Set
 	IfWinNotActive, ParagonSpender Hotkeys
 	{
-		ParagonPointSpender(ParagonMain1, ParagonVitality1, ParagonMovement1, ParagonRessource1)
+		if (HotKeySetToggle1==0)
+		{
+			HotKeySetToggle1=1
+			SetTimer, HotKeySet1, 100	;Spam every 0.1s
+		}
+		else
+		{
+			HotKeySetToggle1=0
+			SetTimer, HotKeySet1, Off	;Turn off the spam
+		}
 	}
 Return
 
-Label2:		;Hotkey for #2 Paragon Setup
+Label2:		;Hotkey for #2 Hotkey Set
 	IfWinNotActive, ParagonSpender Hotkeys
 	{
-		ParagonPointSpender(ParagonMain2, ParagonVitality2, ParagonMovement2, ParagonRessource2)
+		if (HotKeySetToggle2==0)
+		{
+			
+		}
+		else
+		{
+			
+		}
 	}
 Return
 
-Label3:		;Hotkey for #3 Paragon Setup
+Label3:		;Hotkey for #3 Hotkey Set
 	IfWinNotActive, ParagonSpender Hotkeys
 	{
-		ParagonPointSpender(ParagonMain3, ParagonVitality3, ParagonMovement3, ParagonRessource3)
+		if (HotKeySetToggle3==0)
+		{
+			
+		}
+		else
+		{
+			
+		}
 	}
 Return
 
-HotKeySet1:
+HotKeySet1:		;Devour
 	WinActivate, ahk_class D3 Main Window Class
 	WinWaitActive, ahk_class D3 Main Window Class
+	SendInput, 4
 Return
 
 HotKeySet2:
@@ -115,114 +148,12 @@ HotKeySet3:
 	
 Return
 
-ParagonPointSpender(ByRef MainstatPoints, ByRef VitalityPoints, ByRef MovementPoints, ByRef RessourcePoints)
+ExitFunc()
 {
-	
-	WinActivate, ahk_class D3 Main Window Class
-	WinWaitActive, ahk_class D3 Main Window Class
-	Send, {p}
-	MouseGetPos x, y 
-	First:
-	PixelGetColor, ParagonMenuOpen, ParagonMenu[1], ParagonMenu[2]
-	If (ParagonMenuOpen = ParagonMenu[4])
-	{
-		MouseClick, Left, ParagonCore[1], ParagonCore[2]
-		MouseClick, Left, ParagonReset[1], ParagonReset[2]
-		Sleep % Ping + 50
-		ParagonClicker(MovementPoints, Movement, "Limited")
-		ParagonClicker(RessourcePoints, Ressource, "Limited")
-		
-		If (MainstatPoints > VitalityPoints)
+	if (HotKeySetToggle1!=0)
 		{
-			ParagonClicker(MainstatPoints, Mainstat)
-			ParagonClicker(VitalityPoints, Vitality)
+			SetTimer, HotKeySet1, Off	;Turn off the spam when closing
 		}
-		
-		Else
-		{
-			ParagonClicker(VitalityPoints, Vitality)
-			ParagonClicker(MainstatPoints, Mainstat)
-		}
-		
-		TimeBuffer := Ping + 450 - (A_TickCount - StartTime)
-		If (TimeBuffer > 0)
-			Sleep % TimeBuffer
-		
-		MouseClick, Left, ParagonAccept[1], ParagonAccept[2]
-	}
-	Else 
-		GoTo, First
-	Send, {Space}
-	MouseMove %x%, %y%
-	Return
-}
-
-ParagonClicker(ByRef Points, ByRef Position, Type := "Default")
-{
-	If (Points != 0)
-	{ 
-		If (Points == -1)
-		{
-			Start:
-			Send, {Ctrl Down}
-			MouseClick, Left, Position[1], Position[2], 70
-			Send, {Ctrl Up}
-			PixelSearch, , , Position[1], Position[2], Position[1], Position[2], 0x4AABE4, 10
-			If (ErrorLevel = 0)
-				GoTo, Start
-		}			
-		Else
-		{
-			If (Points >= 50) && (Type == "Limited")
-			{
-				Send, {Ctrl Down}
-				MouseClick, Left, Position[1], Position[2]
-				Send, {Ctrl Up}
-			}
- 			Points100 := Floor(Points/100)
-			Points10 := Floor((Points-Points100*100)/10)
-			Points1 := Floor(Points-Points100*100-Points10*10)
-			If (Points100 >= 1)
-			{
-				Send, {Ctrl Down}
-				MouseClick, Left, Position[1], Position[2], Points100
-				Send, {Ctrl Up}
-			}
-			If (Points10 >= 1)
-			{
-				Send, {Shift Down}
-				MouseClick, Left, Position[1], Position[2], Points10
-				Send, {Shift Up}
-			} 
-			If (Points1 >= 1)
-			{
-				MouseClick, Left, Position[1], Position[2], Points1
-			}
-		}
-	}
-}
-
-ConvertCoordinates(ByRef Array)
-{
-	GetClientWindowInfo("ahk_class D3 Main Window Class", DiabloWidth, DiabloHeight, DiabloX, DiabloY)
-	
-	D3ScreenResolution := DiabloWidth*DiabloHeight
-	
-	Position := Array[3]
-
-	;Pixel is always relative to the middle of the Diablo III window
-	If (Position == 1)
-  	Array[1] := Round(Array[1]*DiabloHeight/NativeDiabloHeight+(DiabloWidth-NativeDiabloWidth*DiabloHeight/NativeDiabloHeight)/2, 0)
-
-	;Pixel is always relative to the left side of the Diablo III window or just relative to the Diablo III windowheight
-	If Else (Position == 2 || Position == 4)
-		Array[1] := Round(Array[1]*(DiabloHeight/NativeDiabloHeight), 0)
-
-	;Pixel is always relative to the right side of the Diablo III window
-	If Else (Position == 3)
-		Array[1] := Round(DiabloWidth-(NativeDiabloWidth-Array[1])*DiabloHeight/NativeDiabloHeight, 0)
-
-	Array[2] := Round(Array[2]*(DiabloHeight/NativeDiabloHeight), 0)
 }
 
 GetClientWindowInfo(ClientWindow, ByRef ClientWidth, ByRef ClientHeight, ByRef ClientX, ByRef ClientY)

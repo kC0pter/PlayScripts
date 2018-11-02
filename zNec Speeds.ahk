@@ -47,7 +47,7 @@ Ping=100
 IniRead, Ping, Hotkeys.ini, Settings, Ping
 Loop % #ctrls 
 {
-	GUI, Add, Text, xm y+10, Hotkey for #%A_Index% Paragon Setup:
+	GUI, Add, Text, xm y+10, Hotkey for #%A_Index% Skill Combo:
 	
 	IniRead, savedHK%A_Index%, Hotkeys.ini, Hotkeys, %A_Index%, %A_Space%	;Check for saved hotkeys in INI file.
 	

@@ -119,8 +119,8 @@ Label1:		;Hotkey for Skill Combination 1
 		if (HotKeyCombo1 == 0)
 		{
 			HotKeyCombo1=1
-			SetTimer, HotKeySet1, 19000
-			SetTimer, HotKeySet2, 100
+			SetTimer, HotKeySet1, 2000
+			SetTimer, HotKeySet2, 1000
 			SetTimer, HotKeySet3, 3000
 		}
 		else

@@ -22,7 +22,7 @@ SetDefaultMouseSpeed, 5
 CoordMode, Pixel, Client
 CoordMode, Mouse, Client
 
-OnExit()
+OnExit("ExitFunc")
 
 global D3ScreenResolution
 ,NativeDiabloHeight := 1440
@@ -39,9 +39,9 @@ IfNotExist, Hotkeys.ini
 [Settings]
 Ping=100
 [Hotkeys]
-1=Numpad1
-2=Numpad2
-3=Numpad3
+1=Numpad7
+2=Numpad8
+3=Numpad9
 ), Hotkeys.ini
 
 IniRead, Ping, Hotkeys.ini, Settings, Ping
